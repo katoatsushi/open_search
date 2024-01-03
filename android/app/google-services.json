@@ -1,0 +1,90 @@
+{
+  "project_info": {
+    "project_number": "931547608270",
+    "project_id": "alpha-398211",
+    "storage_bucket": "alpha-398211.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:931547608270:android:739813925982bbba9a0c9f",
+        "android_client_info": {
+          "package_name": "com.example.alpha"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "931547608270-9mo2mlbactceqfjed3t7e6gk798upgfv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.alpha",
+            "certificate_hash": "afd16b43b309c42c991159a6917728d1d06acd49"
+          }
+        },
+        {
+          "client_id": "931547608270-lb7qaneouebd0napm5k7lhs13qafnqlm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeaB3giQLvrqwj-lKQTHFdMWk5-4ub_Io"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "931547608270-bajuq6tnq8vtji1ben4hlq05g9q33j6e.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "931547608270-5pkkrv9e9r6sqe2kis8jruvqfh7pimtr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.alpha.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:931547608270:android:e9a90ac928a89c9e9a0c9f",
+        "android_client_info": {
+          "package_name": "com.example.open_search"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "931547608270-lb7qaneouebd0napm5k7lhs13qafnqlm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeaB3giQLvrqwj-lKQTHFdMWk5-4ub_Io"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "931547608270-bajuq6tnq8vtji1ben4hlq05g9q33j6e.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "931547608270-5pkkrv9e9r6sqe2kis8jruvqfh7pimtr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.alpha.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
