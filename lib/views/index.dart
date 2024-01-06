@@ -36,19 +36,19 @@ class _IndexPageState extends State<IndexPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('${currentUser?.email}'),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.logout),
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                // ログイン画面に遷移＋チャット画面を破棄
-                await Navigator.pushReplacementNamed(context, '/login');
-              },
-            ),
-          ],
-        ),
+        // appBar: AppBar(
+        //   title: Text('${currentUser?.email}'),
+        //   actions: <Widget>[
+        //     IconButton(
+        //       icon: Icon(Icons.logout),
+        //       onPressed: () async {
+        //         await FirebaseAuth.instance.signOut();
+        //         // ログイン画面に遷移＋チャット画面を破棄
+        //         await Navigator.pushReplacementNamed(context, '/login');
+        //       },
+        //     ),
+        //   ],
+        // ),
         body: _screens[_selectedIndex],
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,

@@ -13,6 +13,7 @@ import 'package:flutter/rendering.dart';
 import 'package:open_search/model/gcs.dart';
 import 'package:open_search/env/env.dart';
 import 'package:google_place/google_place.dart';
+import 'package:open_search/views/targetPlaceCard.dart';
 
 class MapComponent extends StatefulWidget {
   const MapComponent({Key? key}) : super(key: key);
@@ -158,7 +159,7 @@ class MapComponentState extends State<MapComponent> {
             print('onVerticalDragUpdate: _onTapped: ${_onTapped}');
             final GoogleMapController controller = await _controller.future;
             double currentZoomLevel = await controller.getZoomLevel();
-            double desiredZoomLevel = currentZoomLevel + details.delta.dy * 0.5;
+            double desiredZoomLevel = currentZoomLevel + details.delta.dy * 0.1;
             controller.animateCamera(CameraUpdate.zoomTo(desiredZoomLevel));
             print("currentZoomLevel is $currentZoomLevel");
             setState(() {
@@ -231,25 +232,11 @@ class MapComponentState extends State<MapComponent> {
 
       setState(() {
         nearByPredictions = searchResult;
-        // for (var r in searchResult) {
-        //   if (r.photos != null) {
-        //     for (var photo in r.photos!) {
-        //       print(photo.photoReference);
-        //     }
-        //   }
-        // }
       });
     }
   }
 
-  Future<void> zoomInTo() async {
-    final GoogleMapController controller = await _controller.future;
-    double currentZoomLevel = await controller.getZoomLevel();
-    double desiredZoomLevel = zoomLevel;
-    controller.animateCamera(CameraUpdate.zoomTo(desiredZoomLevel));
-  }
-
-// 選択した場所を表示とzoomを設定
+  // 選択した場所を表示とzoomを設定
   Future<void> _changePosition(LatLng latLng, double zoom) async {
     if (latLng != null) {
       final completer = await _controller.future;
@@ -258,34 +245,6 @@ class MapComponentState extends State<MapComponent> {
           .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
     }
   }
-
-  Image getTargetSampleImage() {
-    final List<Photo>? photos = searchedTarget?.photos;
-    if (photos != null) {
-      var firstPhotoRef = photos[0]?.photoReference;
-      final String endpoint =
-          "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${firstPhotoRef}&key=${apiKey}";
-      return Image.network(endpoint);
-    }
-    return Image.asset('assets/no-image.jpeg');
-  }
-
-  // Future<void> _getTargetLatLng(String? placeId) async {
-  //   String requestUrl =
-  //       'https://maps.googleapis.com/maps/api/place/details/json?language=ja&place_id=${placeId}&key=${apiKey}';
-  //   http.Response? response;
-  //   response = await http.get(Uri.parse(requestUrl));
-
-  //   if (response.statusCode == 200) {
-  //     final res = json.decode(response.body);
-  //     print(res);
-  //     var northEast = res['result']['geometry']['viewport']['northeast'];
-  //     var southWest = res['result']['geometry']['viewport']['southwest'];
-  //     var location = res['result']['geometry']['location'];
-  //     double latitude = double.parse(northEast['lat'].toString());
-  //     double longitude = double.parse(northEast['lng'].toString());
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -301,200 +260,280 @@ class MapComponentState extends State<MapComponent> {
               height: 100,
               child: CircularProgressIndicator(),
             )
-          : SafeArea(
-              child: Stack(
-                fit: _onTapped ? StackFit.expand : StackFit.loose,
-                children: [
-                  GoogleMap(
-                    // mapType: MapType.hybrid,
-                    mapType: selectedMapType,
-                    // 検索結果がなければ、現在地をCameraPositionにする
-                    initialCameraPosition: CameraPosition(
-                      target: cameraPosition,
-                      zoom: zoomLevel,
-                    ),
-                    markers: {
-                      (pinLocationIcon == null)
-                          ? Marker(
-                              markerId: (MarkerId('marker1')),
-                              position: _initialPosition,
-                            )
-                          : Marker(
-                              markerId: (MarkerId('marker1')),
-                              position: _initialPosition,
-                              icon: pinLocationIcon!),
-                      if (searchedTarget != null)
-                        Marker(
-                          markerId: (MarkerId('marker2')),
-                          position: LatLng(
-                              searchedTarget?.geometry?.location?.lat as double,
-                              searchedTarget?.geometry?.location?.lng
-                                  as double),
-                          infoWindow: InfoWindow(
-                              title: searchedTarget?.name,
-                              snippet: searchedTarget?.vicinity),
-                        )
-                    },
-                    onMapCreated: (GoogleMapController controller) {
-                      _controller.complete(controller);
-                    },
-                    myLocationEnabled: true,
-                    myLocationButtonEnabled: true,
-                    mapToolbarEnabled: false,
-                    buildingsEnabled: true,
-                    scrollGesturesEnabled: true,
-                    onTap: (LatLng latLang) {
-                      print('Clicked: $latLang');
-                    },
+          :
+          // SafeArea( child:
+          Stack(
+              fit: _onTapped ? StackFit.expand : StackFit.loose,
+              children: [
+                GoogleMap(
+                  // mapType: MapType.hybrid,
+                  mapType: selectedMapType,
+                  // 検索結果がなければ、現在地をCameraPositionにする
+                  initialCameraPosition: CameraPosition(
+                    target: cameraPosition,
+                    zoom: zoomLevel,
                   ),
-                  ...zoomGuidLine(screenWidth, screenHeight),
-                  Text("Zoom Level: $zoomLevel"),
-                  if (isSearching)
-                    Container(
-                        height: MediaQuery.of(context).size.height * 1.0,
-                        width: MediaQuery.of(context).size.width * 1.0,
-                        padding: EdgeInsets.only(top: 80),
+                  markers: {
+                    (pinLocationIcon == null)
+                        ? Marker(
+                            markerId: (MarkerId('marker1')),
+                            position: _initialPosition,
+                          )
+                        : Marker(
+                            markerId: (MarkerId('marker1')),
+                            position: _initialPosition,
+                            icon: pinLocationIcon!),
+                    if (searchedTarget != null)
+                      Marker(
+                        markerId: (MarkerId('marker2')),
+                        position: LatLng(
+                            searchedTarget?.geometry?.location?.lat as double,
+                            searchedTarget?.geometry?.location?.lng as double),
+                        infoWindow: InfoWindow(
+                            title: searchedTarget?.name,
+                            snippet: searchedTarget?.vicinity),
+                      )
+                  },
+                  onMapCreated: (GoogleMapController controller) {
+                    _controller.complete(controller);
+                  },
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: true,
+                  mapToolbarEnabled: false,
+                  buildingsEnabled: true,
+                  scrollGesturesEnabled: true,
+                  onTap: (LatLng latLang) {
+                    print('Clicked: $latLang');
+                  },
+                ),
+                ...zoomGuidLine(screenWidth, screenHeight),
+                Text("Zoom Level: $zoomLevel"),
+                if (isSearching)
+                  Container(
+                      height: MediaQuery.of(context).size.height * 1.0,
+                      width: MediaQuery.of(context).size.width * 1.0,
+                      padding: EdgeInsets.only(top: 80),
+                      color: Colors.white,
+                      child: ListView.builder(
+                        itemCount: nearByPredictions?.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            child: ListTile(
+                              title: Text("${nearByPredictions?[index].name}"),
+                              subtitle: Text(
+                                  nearByPredictions?[index].vicinity as String),
+                              trailing:
+                                  Text("⭐️${nearByPredictions?[index].rating}"),
+                              onTap: () async {
+                                searchedTarget = nearByPredictions![index];
+                                zoomLevel = zoomLevelSearchDone;
+                                setState(() {
+                                  isSearching = false;
+                                });
+                                cameraPosition = LatLng(
+                                    searchedTarget?.geometry?.location?.lat
+                                        as double,
+                                    searchedTarget?.geometry?.location?.lng
+                                        as double);
+                                _changePosition(
+                                    cameraPosition, zoomLevelSearchDone);
+                              },
+                            ),
+                          );
+                        },
+                      )),
+                if (searchedTarget != null)
+                  Positioned(
+                      bottom: 10,
+                      left: MediaQuery.of(context).size.width * 0.02,
+                      child: TargetPlaceCard(searchedTarget: searchedTarget!)),
+                // アイコン
+                Positioned(
+                  top: MediaQuery.of(context).size.height * 0.05 + 10,
+                  right: 10,
+                  child: GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (BuildContext context) {
+                            return Container(
+                                margin: EdgeInsets.only(
+                                    top: MediaQuery.of(context).size.height *
+                                        0.10),
+                                decoration: const BoxDecoration(
+                                  color: Colors.blue,
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20),
+                                  ),
+                                ),
+                                child: Container(
+                                  margin: EdgeInsets.only(
+                                      left: 16, right: 16, top: 20),
+                                  alignment: Alignment.topLeft,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.90,
+                                  child: Column(children: [
+                                    Container(
+                                      width: double.infinity,
+                                      padding: EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                          width: 1.0,
+                                        ),
+                                        color: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                      child: Text("QRコード"),
+                                    ),
+                                    Container(
+                                      width: double.infinity,
+                                      padding: EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                          width: 1.0,
+                                        ),
+                                        color: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                      child: Text("友達一覧"),
+                                    ),
+                                    Container(
+                                      width: double.infinity,
+                                      padding: EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                          width: 1.0,
+                                        ),
+                                        color: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                      child: Text("最近のお気に入り"),
+                                    ),
+                                    Container(
+                                      width: double.infinity,
+                                      padding: EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                          width: 1.0,
+                                        ),
+                                        color: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                      child: Text("最近の保存"),
+                                    )
+                                  ]),
+                                ));
+                          });
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(1.0),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.blue,
+                          width: 2.0,
+                        ),
+                      ),
+                      child: ClipOval(
+                        child: Image.network(
+                          'https://github.com/katoatsushi.png',
+                          width: 50.0,
+                          height: 50.0,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                // Positioned(
+                //     top: MediaQuery.of(context).size.height * 0.05 + 10,
+                //     right: 10,
+                //     child: Container(
+                //         padding: EdgeInsets.all(1.0), // ボーダーと写真の間のスペース
+                //         decoration: BoxDecoration(
+                //           shape: BoxShape.circle, // 丸い形状
+                //           border: Border.all(
+                //             color: Colors.blue, // ボーダーの色
+                //             width: 2.0, // ボーダーの太さ
+                //           ),
+                //         ),
+                //         child: ClipOval(
+                //           child: Image.network(
+                //             'https://github.com/katoatsushi.png', // 写真のURL
+                //             width: 50.0, // 写真の幅
+                //             height: 50.0, // 写真の高さ
+                //             fit: BoxFit.cover, // 画像のフィット
+                //           ),
+                //         ))),
+                // アイコンをクリックするとモーダルが出現する
+
+                Positioned(
+                  top: MediaQuery.of(context).size.height * 0.05 + 10,
+                  left: MediaQuery.of(context).size.width * 0.05,
+                  child: Container(
+                      decoration: BoxDecoration(
                         color: Colors.white,
-                        child: ListView.builder(
-                          itemCount: nearByPredictions?.length,
-                          itemBuilder: (context, index) {
-                            return Card(
-                              child: ListTile(
-                                title:
-                                    Text("${nearByPredictions?[index].name}"),
-                                subtitle: Text(nearByPredictions?[index]
-                                    .vicinity as String),
-                                trailing: Text(
-                                    "⭐️${nearByPredictions?[index].rating}"),
-                                onTap: () async {
-                                  searchedTarget = nearByPredictions![index];
-                                  zoomLevel = zoomLevelSearchDone;
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 10.0,
+                              spreadRadius: 1.0,
+                              offset: Offset(10, 10))
+                        ],
+                      ),
+                      child: Container(
+                          width: MediaQuery.of(context).size.width *
+                                  (1.0 - 0.05 * 2) -
+                              60,
+                          height: 50,
+                          alignment: Alignment.centerLeft,
+                          child: TextFormField(
+                            onTap: () => {
+                              setState(() {
+                                isSearching = true;
+                              })
+                            },
+                            onChanged: (value) {
+                              if (value.isNotEmpty) {
+                                searchNearByPlace(value);
+                              } else {
+                                setState(() {
+                                  nearByPredictions = [];
+                                });
+                              }
+                            },
+                            decoration: InputDecoration(
+                              prefixIcon: IconButton(
+                                color: Colors.grey[500],
+                                icon: Icon(Icons.arrow_back_ios_new),
+                                onPressed: () {
                                   setState(() {
                                     isSearching = false;
                                   });
-                                  cameraPosition = LatLng(
-                                      searchedTarget?.geometry?.location?.lat
-                                          as double,
-                                      searchedTarget?.geometry?.location?.lng
-                                          as double);
-                                  _changePosition(
-                                      cameraPosition, zoomLevelSearchDone);
                                 },
                               ),
-                            );
-                          },
-                        )),
-                  if (searchedTarget != null)
-                    Positioned(
-                        bottom: 10,
-                        left: MediaQuery.of(context).size.width * 0.02,
-                        child: Container(
-                          color: Colors.white,
-                          width: MediaQuery.of(context).size.width * 0.96,
-                          child: ListTile(
-                            leading: getTargetSampleImage(),
-                            title: Text(searchedTarget?.name ?? 'No Name'),
-                            subtitle: Text(
-                                searchedTarget?.vicinity ?? 'No Description'),
-                          ),
-                        )),
-                  Positioned(
-                    top: 10,
-                    left: MediaQuery.of(context).size.width * 0.05,
-                    child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(30),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 10.0,
-                                spreadRadius: 1.0,
-                                offset: Offset(10, 10))
-                          ],
-                        ),
-                        child: Container(
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            height: 50,
-                            alignment: Alignment.centerLeft,
-                            child: TextFormField(
-                              onTap: () => {
-                                setState(() {
-                                  isSearching = true;
-                                })
-                              },
-                              onChanged: (value) {
-                                if (value.isNotEmpty) {
-                                  searchNearByPlace(value);
-                                } else {
-                                  setState(() {
-                                    nearByPredictions = [];
-                                  });
-                                }
-                              },
-                              decoration: InputDecoration(
-                                prefixIcon: IconButton(
-                                  color: Colors.grey[500],
-                                  icon: Icon(Icons.arrow_back_ios_new),
-                                  onPressed: () {
-                                    setState(() {
-                                      isSearching = false;
-                                    });
-                                  },
-                                ),
-                                hintText: '場所を検索',
-                                hintStyle: TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.bold),
-                                border: InputBorder.none,
-                              ),
-                            ))),
-                  ),
-                  // Positioned(
-                  //   top: 60,
-                  //   left: MediaQuery.of(context).size.width * 0.05,
-                  //   child: Column(children: [
-                  //     Flexible(
-                  //       child: ListView.builder(
-                  //         shrinkWrap: true,
-                  //         itemCount: predictions
-                  //             .length, // 検索結果を格納したpredictions配列の長さを指定
-                  //         itemBuilder: (context, index) {
-                  //           return Card(
-                  //             child: ListTile(
-                  //               title: Text(predictions[index]
-                  //                   .description
-                  //                   .toString()), // 検索結果を表示。descriptionを指定すると場所名が表示されます。
-                  //               // subtitle: predictions[index]distance_meters ? Text(`${predictions[index]distance_meters}m`): null,
-                  //               subtitle: predictions[index].distanceMeters !=
-                  //                       null
-                  //                   ? Text(
-                  //                       "現在地から${predictions[index].distanceMeters}m")
-                  //                   : null,
-                  //               // distance_metersは地図上からの距離（メートル
-                  //               onTap: () async {
-                  //                 await _getTargetLatLng(
-                  //                     predictions[index].placeId);
-                  //               },
-                  //             ),
-                  //           );
-                  //         },
-                  //       ),
-                  //     ),
-                  //   ]),
-                  // ),
-                  // Positioned(
-                  //   bottom: 20, // トップからの距離
-                  //   left: 20, // 画面の幅の半分 - ボタンの幅の半分
-                  //   child: FloatingActionButton(
-                  //     child: Icon(Icons.search),
-                  //     onPressed: () async {
-                  //       /* --- 省略 --- */
-                  //     },
-                  //   ),
-                  // ),
-                ],
-              ),
+                              hintText: '場所を検索',
+                              hintStyle: TextStyle(
+                                  fontSize: 15, fontWeight: FontWeight.bold),
+                              border: InputBorder.none,
+                            ),
+                          ))),
+                ),
+              ],
             ),
+      // ),
     );
   }
 }

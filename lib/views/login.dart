@@ -11,8 +11,8 @@ class _LoginPageState extends State<LoginPage> {
   // メッセージ表示用
   String infoText = '';
   // 入力したメールアドレス・パスワード
-  String email = '19971026@gmail.com';
-  String password = 'gonza1026';
+  String email = '';
+  String password = '';
 
   @override
   Widget build(BuildContext context) {
