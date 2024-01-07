@@ -14,6 +14,9 @@ import 'package:open_search/model/gcs.dart';
 import 'package:open_search/env/env.dart';
 import 'package:google_place/google_place.dart';
 import 'package:open_search/views/targetPlaceCard.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:open_search/views/map/modal/uiParts/myProfileCard.dart';
+import 'package:open_search/views/map/modal/accountInfo.dart';
 
 class MapComponent extends StatefulWidget {
   const MapComponent({Key? key}) : super(key: key);
@@ -357,83 +360,8 @@ class MapComponentState extends State<MapComponent> {
                           context: context,
                           isScrollControlled: true,
                           backgroundColor: Colors.transparent,
-                          builder: (BuildContext context) {
-                            return Container(
-                                margin: EdgeInsets.only(
-                                    top: MediaQuery.of(context).size.height *
-                                        0.10),
-                                decoration: const BoxDecoration(
-                                  color: Colors.blue,
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(20),
-                                    topRight: Radius.circular(20),
-                                  ),
-                                ),
-                                child: Container(
-                                  margin: EdgeInsets.only(
-                                      left: 16, right: 16, top: 20),
-                                  alignment: Alignment.topLeft,
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.90,
-                                  child: Column(children: [
-                                    Container(
-                                      width: double.infinity,
-                                      padding: EdgeInsets.all(6),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: Colors.grey,
-                                          width: 1.0,
-                                        ),
-                                        color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      child: Text("QRコード"),
-                                    ),
-                                    Container(
-                                      width: double.infinity,
-                                      padding: EdgeInsets.all(6),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: Colors.grey,
-                                          width: 1.0,
-                                        ),
-                                        color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      child: Text("友達一覧"),
-                                    ),
-                                    Container(
-                                      width: double.infinity,
-                                      padding: EdgeInsets.all(6),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: Colors.grey,
-                                          width: 1.0,
-                                        ),
-                                        color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      child: Text("最近のお気に入り"),
-                                    ),
-                                    Container(
-                                      width: double.infinity,
-                                      padding: EdgeInsets.all(6),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: Colors.grey,
-                                          width: 1.0,
-                                        ),
-                                        color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      child: Text("最近の保存"),
-                                    )
-                                  ]),
-                                ));
+                          builder: (BuildContext newContext) {
+                            return AccountInfoModal();
                           });
                     },
                     child: Container(
@@ -456,28 +384,6 @@ class MapComponentState extends State<MapComponent> {
                     ),
                   ),
                 ),
-                // Positioned(
-                //     top: MediaQuery.of(context).size.height * 0.05 + 10,
-                //     right: 10,
-                //     child: Container(
-                //         padding: EdgeInsets.all(1.0), // ボーダーと写真の間のスペース
-                //         decoration: BoxDecoration(
-                //           shape: BoxShape.circle, // 丸い形状
-                //           border: Border.all(
-                //             color: Colors.blue, // ボーダーの色
-                //             width: 2.0, // ボーダーの太さ
-                //           ),
-                //         ),
-                //         child: ClipOval(
-                //           child: Image.network(
-                //             'https://github.com/katoatsushi.png', // 写真のURL
-                //             width: 50.0, // 写真の幅
-                //             height: 50.0, // 写真の高さ
-                //             fit: BoxFit.cover, // 画像のフィット
-                //           ),
-                //         ))),
-                // アイコンをクリックするとモーダルが出現する
-
                 Positioned(
                   top: MediaQuery.of(context).size.height * 0.05 + 10,
                   left: MediaQuery.of(context).size.width * 0.05,
