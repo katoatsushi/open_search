@@ -28,27 +28,69 @@ class _AccountSettingState extends State<AccountSetting> {
     Size screenSize = MediaQuery.of(context).size;
     double screenWidth = screenSize.width;
     double screenHeight = screenSize.height;
-    print(currentUser);
+    print(currentUser?.displayName);
 
     if (currentUser?.email == null) {
       return Center(
         child: Text("アカウント読み込み中にエラーが起きました"),
       );
     }
-    return Container(
-        child: Column(
-      children: [
-        Row(children: [
-          Text("メールアドレス"),
-          Expanded(child: SizedBox()),
-          Text(currentUser?.email as String),
-        ]),
-        // Row(children: [
-        //   Text("名前"),
-        //   Expanded(child: SizedBox()),
-        //   Text(currentUser?.displayName),
-        // ])
-      ],
-    ));
+    print(currentUser);
+    return SafeArea(
+        bottom: false,
+        child: Container(
+            margin: EdgeInsets.all(40),
+            child: Column(
+              children: [
+                Row(children: [
+                  const Text(
+                    "メールアドレス",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const Expanded(child: SizedBox()),
+                  Text(currentUser?.email as String),
+                ]),
+                Row(children: [
+                  const Text(
+                    "名前",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const Expanded(child: SizedBox()),
+                  Text(currentUser?.displayName as String),
+                ]),
+                Expanded(child: SizedBox()),
+                Container(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    child: const Text('ログアウトする'),
+                    style: OutlinedButton.styleFrom(
+                        primary: Colors.black,
+                        shape: const StadiumBorder(),
+                        side: const BorderSide(color: Colors.green),
+                        backgroundColor:
+                            Color(int.parse("FFCCFFCC", radix: 16))),
+                    onPressed: () async {
+                      try {
+                        // メール/パスワードでログイン
+                        final FirebaseAuth auth = FirebaseAuth.instance;
+                        await auth.signOut();
+                        await Navigator.pushReplacementNamed(context, '/login');
+                      } catch (e) {
+                        // ログインに失敗した場合
+                        // setState(() {
+                        //   infoText = "ログインに失敗しました：${e.toString()}";
+                        // });
+                      }
+                    },
+                  ),
+                )
+              ],
+            )));
   }
 }

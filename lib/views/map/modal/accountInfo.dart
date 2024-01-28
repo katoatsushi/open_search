@@ -5,9 +5,29 @@ import 'package:open_search/views/map/modal/uiParts/myProfileCard.dart';
 import 'package:open_search/views/map/modal/uiParts/friendsCard.dart';
 import 'package:open_search/views/map/modal/uiParts/favoriteCard.dart';
 import 'package:open_search/views/map/modal/uiParts/bookmarkCard.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class AccountInfoModal extends StatelessWidget {
-  AccountInfoModal({Key? key}) : super(key: key);
+class AccountInfoModal extends StatefulWidget {
+  const AccountInfoModal({Key? key}) : super(key: key);
+  @override
+  _AccountInfoModalState createState() => _AccountInfoModalState();
+}
+
+class _AccountInfoModalState extends State<AccountInfoModal> {
+// class AccountInfoModal extends StatelessWidget {
+  // AccountInfoModal({Key? key}) : super(key: key);
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  late User? currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    final User? user = auth.currentUser;
+
+    setState(() {
+      currentUser = user;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,10 +72,12 @@ class AccountInfoModal extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text(
-                    "ホゲホゲ ふがふが",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                  ),
+                  if (currentUser != null)
+                    Text(
+                      currentUser?.displayName ?? 'Default Name',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
                   Expanded(child: SizedBox()),
                   Container(
                     padding: EdgeInsets.all(2.0),

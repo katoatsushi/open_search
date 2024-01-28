@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'views/index.dart';
 import 'views/login.dart';
 import 'firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
   // 初期化処理を追加

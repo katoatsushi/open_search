@@ -17,6 +17,9 @@ import 'package:open_search/views/targetPlaceCard.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:open_search/views/map/modal/uiParts/myProfileCard.dart';
 import 'package:open_search/views/map/modal/accountInfo.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class MapComponent extends StatefulWidget {
   const MapComponent({Key? key}) : super(key: key);
@@ -46,20 +49,26 @@ class MapComponentState extends State<MapComponent> {
   List<SearchResult>? nearByPredictions = [];
   bool isSearching = false;
   SearchResult? searchedTarget;
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  late User? currentUser;
 
   @override
   void initState() {
     // init Google Place
     googlePlace = GooglePlace(apiKey);
     super.initState();
+    final User? user = auth.currentUser;
     _loading = true;
     // setState(() {});
-    _getUserLocation();
+
+    setState(() {
+      currentUser = user;
+    });
     Future(() async {
       // BitmapDescriptor newIcon = await setCustomMapPin();
+      await _isUserDocExist(user);
 
-      // final url = await gcsModel.fetchPhotoFromGCS();
-
+      await _getUserLocation();
       BitmapDescriptor icon =
           await getBitmapDescriptorFromAssetBytes("assets/sayhi.jpeg", 150);
 
@@ -67,6 +76,20 @@ class MapComponentState extends State<MapComponent> {
         pinLocationIcon = icon;
       });
     });
+  }
+
+  Future<void> _isUserDocExist(User? user) async {
+    final db =
+        FirebaseFirestore.instanceFor(app: Firebase.app(), databaseURL: "main");
+    final userDocRef = db.collection('users').doc(user?.uid);
+
+    final userDocQuery = await userDocRef.get();
+
+    if (userDocQuery.exists) {
+      print(userDocQuery);
+    } else {
+      await userDocRef.set({});
+    }
   }
 
   Future<Position> _determinePosition() async {
@@ -98,7 +121,7 @@ class MapComponentState extends State<MapComponent> {
     return await Geolocator.getCurrentPosition();
   }
 
-  void _getUserLocation() async {
+  Future<void> _getUserLocation() async {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       await Geolocator.requestPermission();
@@ -228,6 +251,7 @@ class MapComponentState extends State<MapComponent> {
         // type: 'restaurant',
         keyword: keyWord,
       );
+      print(result?.results);
       List<SearchResult> searchResult = [];
       if (result != null && result.results != null) {
         searchResult = result.results!;
@@ -258,11 +282,12 @@ class MapComponentState extends State<MapComponent> {
     return Container(
       // height: 600,
       child: _loading
-          ? SizedBox(
+          ? const Center(
+              child: SizedBox(
               width: 100,
               height: 100,
               child: CircularProgressIndicator(),
-            )
+            ))
           :
           // SafeArea( child:
           Stack(
